@@ -1,16 +1,13 @@
 services:
-  #frontend:
-  #   build:
-  #    context: .
-  # ports:
-  #  - "8501:8501"
-  # env_file:
-  #  - .env
-  #volumes:
-  # - ./files_uploaded:/data  
+  frontend:
+     build:
+      context: .
+  ports:
+    - "8501:8501"
+  env_file:
+    - .env 
   chroma:
     image: chromadb/chroma:latest
     volumes:
       - ./chroma_db:/data
-    ports:
-      - "8000:8000"
+    
