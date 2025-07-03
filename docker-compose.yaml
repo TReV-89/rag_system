@@ -1,11 +1,11 @@
 services:
   frontend:
-     build:
+    build:
       context: .
-  ports:
-    - "8501:8501"
-  env_file:
-    - .env 
+    ports:
+      - "8501:8501"
+    env_file:
+      - .env 
   chroma:
     image: chromadb/chroma:latest
     volumes:
