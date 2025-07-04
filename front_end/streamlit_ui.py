@@ -10,11 +10,11 @@ from rag_methods import (
     initialize_session_states,
     generate_response,
     display_chat_messages,
-    handle_file_upload
+    handle_file_upload,
 )
 
 # Load environment variables
-load_dotenv()
+load_dotenv("../.env")
 api_key = os.getenv("GEMINI_API_KEY")
 model = os.getenv("GEMINI_MODEL")
 
@@ -25,7 +25,7 @@ if not api_key:
 google_ef = embedding_functions.GoogleGenerativeAiEmbeddingFunction(
     api_key=os.getenv("GEMINI_API_KEY")
 )
-client = chromadb.HttpClient(host="localhost", port=8000)
+client = chromadb.HttpClient(host="chroma", port=8000)
 
 # Check ChromaDB connection
 if not (ret := client.heartbeat()):

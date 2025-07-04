@@ -1,13 +1,24 @@
 services:
   frontend:
     build:
-      context: .
+      context: front_end
     ports:
       - "8501:8501"
     env_file:
       - .env 
+    networks:
+      - my-network  
   chroma:
     image: chromadb/chroma:latest
     volumes:
-      - ./chroma_db:/data
+      - ./chroma_database:/data 
+    networks:
+      - my-network
+
+networks:
+  my-network:
+    driver: bridge
+
+volumes:
+  chroma_database:
     

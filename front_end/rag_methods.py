@@ -1,5 +1,6 @@
 import os
 import streamlit as st
+import time
 from langchain_community.document_loaders import TextLoader, PyPDFLoader, Docx2txtLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
@@ -24,9 +25,19 @@ def initialize_session_states():
 
 
 def split_and_load_documents(docs, collection):
+    progress_bar = st.progress(0)
+    status_text = st.empty()
+
+    status_text.text("Splitting documents into chunks...")  
+    progress_bar.progress(20)
+    time.sleep(3)
     chunker = RecursiveCharacterTextSplitter(chunk_size=800, chunk_overlap=50)
     chunked_docs = chunker.split_documents(docs)
 
+    progress_bar.progress(40)
+    status_text.text("Processing document chunks...")
+    time.sleep(3)
+    
     def documents_to_texts(docs):
         return [doc.page_content for doc in docs]
 
@@ -36,11 +47,20 @@ def split_and_load_documents(docs, collection):
     texts = documents_to_texts(chunked_docs)
     metadatas = documents_to_metadatas(chunked_docs)
 
+    progress_bar.progress(60)
+    status_text.text("Generating embeddings and adding to database...")
     collection.add(
         documents=texts,
         metadatas=metadatas,
         ids=[f"id{i}" for i in range(len(chunked_docs))],
     )
+
+    progress_bar.progress(100)
+    status_text.text("✅ Documents successfully processed and added to database!")
+
+    time.sleep(3)
+    progress_bar.empty()
+    status_text.empty()
 
 
 def load_document(file_path, file_name):
@@ -82,26 +102,38 @@ def generate_response(message, collection, llm):
 
     # Query the collection for relevant documents
     results = collection.query(query_texts=[message], n_results=5)
-    docs = results["documents"][0]
+    smallest_distance = results["distances"][0][0]
+    if smallest_distance < 1:
+        docs = results["documents"][0]
 
-    system_message = SystemMessage(
-        content="You are a helpful assistant. Only answer questions based on the results from the documents provided. If the answer is not from the document provided , say 'I don't know'."
-    )
+        system_message = SystemMessage(
+            content="You are a helpful assistant. Only answer questions based on the results from the documents provided. If the answer is not from the document provided , say 'I don't know'."
+        )
 
-    enhanced_system_message = f"""{system_message.content} , Use the following documents to answer the question: {"\n".join(docs)}"""
+        enhanced_system_message = f"""{system_message.content} , Use the following documents to answer the question: {"\n".join(docs)}"""
 
-    messages = [
-        SystemMessage(content=enhanced_system_message),
-        HumanMessage(content=message),
-    ]
+        messages = [
+            SystemMessage(content=enhanced_system_message),
+            HumanMessage(content=message),
+        ]
 
-    recent_messages = st.session_state.messages
-    messages.extend(recent_messages)
+        recent_messages = st.session_state.messages
+        messages.extend(recent_messages)
 
-    response = llm.invoke(messages)
-    st.session_state.messages.append(response)
-    st.session_state.latest_messages_sent.append(response)
-    return response
+        response = llm.invoke(messages)
+        st.session_state.messages.append(response)
+        st.session_state.latest_messages_sent.append(response)
+        return response
+    else:
+        system_message = SystemMessage(
+            content="You are a helpful assistant. Reply the user as you would normally do, but do not use any documents to answer the question."
+        )
+        messages = [system_message, HumanMessage(content=message)]
+        recent_messages = st.session_state.messages
+        messages.extend(recent_messages)
+        response = llm.invoke(messages)
+        st.session_state.messages.append(response)
+        return response
 
 
 def display_chat_messages():
