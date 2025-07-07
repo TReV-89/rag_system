@@ -103,11 +103,11 @@ def generate_response(message, collection, llm):
     # Query the collection for relevant documents
     results = collection.query(query_texts=[message], n_results=5)
     smallest_distance = results["distances"][0][0]
-    if smallest_distance < 1:
+    if smallest_distance < 0.7:
         docs = results["documents"][0]
 
         system_message = SystemMessage(
-            content="You are a helpful assistant. Only answer questions based on the results from the documents provided. If the answer is not from the document provided , say 'I don't know'."
+            content="You are a helpful assistant. Only answer questions based on the results from the documents provided. If the answer is not from the document provided , say 'I can only answer questions about the document provided.'."
         )
 
         enhanced_system_message = f"""{system_message.content} , Use the following documents to answer the question: {"\n".join(docs)}"""
