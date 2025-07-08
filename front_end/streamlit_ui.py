@@ -4,13 +4,13 @@ import streamlit as st
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage
-from chromadb.utils import embedding_functions
 from rag_methods import (
     clear_chat,
     initialize_session_states,
     generate_response,
     display_chat_messages,
     handle_file_upload,
+    
 )
 
 # Load environment variables
@@ -22,9 +22,6 @@ if not api_key:
     raise ValueError("GEMINI_API_KEY environment variable is not in .env file.")
 
 # Initialize ChromaDB
-google_ef = embedding_functions.GoogleGenerativeAiEmbeddingFunction(
-    api_key=os.getenv("GEMINI_API_KEY")
-)
 client = chromadb.HttpClient(host="chroma", port=8000)
 
 # Check ChromaDB connection
@@ -39,8 +36,7 @@ else:
 # Initialize collection
 if "rag_collection" not in st.session_state:
     st.session_state.rag_collection = client.get_or_create_collection(
-        name="rag_collection", embedding_function=google_ef
-    )
+        name="rag_collection_user")
 
 # Initialize LLM
 if "llm" not in st.session_state:

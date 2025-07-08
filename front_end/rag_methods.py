@@ -1,11 +1,34 @@
 import os
 import streamlit as st
 import time
-from langchain_community.document_loaders import TextLoader, PyPDFLoader, Docx2txtLoader
+import pdfplumber
+from langchain_community.document_loaders import (
+    TextLoader,
+    PDFPlumberLoader
+)
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 
 
+def split_and_load_documents_in_built(collection):
+    file_name = "war and peace.txt"
+    current_directory = os.path.dirname(__file__)
+    file_path = os.path.join(current_directory, "..", "rag_document", file_name)
+    file_path = os.path.normpath(file_path)
+    rag_documents = load_document(file_path, file_name)
+    
+    if rag_documents:
+        chunker = RecursiveCharacterTextSplitter(chunk_size=800, chunk_overlap=50)
+        chunked_docs = chunker.split_documents(rag_documents)
+        texts = documents_to_texts(chunked_docs)
+        metadatas = documents_to_metadatas(chunked_docs)
+        collection.add(
+            documents=texts,
+            metadatas=metadatas,
+            ids=[f"id{i}" for i in range(len(chunked_docs))],
+        )
+
+     
 def clear_chat():
     if "messages" in st.session_state:
         st.session_state.messages.clear()
@@ -24,11 +47,19 @@ def initialize_session_states():
         st.session_state.messages = []
 
 
+def documents_to_texts(docs):
+    return [doc.page_content for doc in docs]
+
+
+def documents_to_metadatas(docs):
+    return [doc.metadata for doc in docs]
+
+
 def split_and_load_documents(docs, collection):
     progress_bar = st.progress(0)
     status_text = st.empty()
 
-    status_text.text("Splitting documents into chunks...")  
+    status_text.text("Splitting documents into chunks...")
     progress_bar.progress(20)
     time.sleep(3)
     chunker = RecursiveCharacterTextSplitter(chunk_size=800, chunk_overlap=50)
@@ -37,12 +68,6 @@ def split_and_load_documents(docs, collection):
     progress_bar.progress(40)
     status_text.text("Processing document chunks...")
     time.sleep(3)
-    
-    def documents_to_texts(docs):
-        return [doc.page_content for doc in docs]
-
-    def documents_to_metadatas(docs):
-        return [doc.metadata for doc in docs]
 
     texts = documents_to_texts(chunked_docs)
     metadatas = documents_to_metadatas(chunked_docs)
@@ -69,10 +94,7 @@ def load_document(file_path, file_name):
             loader = TextLoader(file_path, encoding="utf-8")
             return loader.load()
         elif file_name.endswith(".pdf"):
-            loader = PyPDFLoader(file_path)
-            return loader.load()
-        elif file_name.endswith(".docx"):
-            loader = Docx2txtLoader(file_path)
+            loader = PDFPlumberLoader(file_path)
             return loader.load()
         else:
             st.error(f"Unsupported file type: {file_name}")
