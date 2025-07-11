@@ -40,8 +40,10 @@ Clone the repository and run the load_in_built.py file to load the default docum
 
 ```bash
 git clone https://github.com/TReV-89/rag_system.git
-cd rag_system/front_end
-python run load_in_built.py
+cd rag_system
+python3 -m venv venv
+source venv/bin/activate
+pip install -r front_end/requirements.txt
 ```
 
 ### 2. Set Up Environment Variables
@@ -58,7 +60,7 @@ https://aistudio.google.com/apikey
 
 ### 3. Build the Docker Image
 
-Make sure Docker is installed. After the load_in_built.py file finishes running, build the Docker Compose container:
+Make sure Docker is installed. Build the Docker Compose container:
 
 ```bash
 cd ..
@@ -94,7 +96,7 @@ You should see the RAG System interface.
 The deployed application is accessible at:
 
 ```
-
+http://13.48.135.56:8501 
 ```
 
 ---
