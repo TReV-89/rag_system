@@ -4,6 +4,8 @@ services:
       context: front_end
     ports:
       - "8501:8501"
+    depends_on:
+      - chroma  
     env_file:
       - .env 
     networks:

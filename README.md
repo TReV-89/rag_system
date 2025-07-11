@@ -36,9 +36,12 @@ The system is built on the following components:
 
 ### 1. Clone the Repository
 
+Clone the repository and run the load_in_built.py file to load the default document. It will take some time as it is a document with over 100,000 words. In the meantime, you may progress with the rest of the steps.
+
 ```bash
 git clone https://github.com/TReV-89/rag_system.git
 cd rag_system/front_end
+python run load_in_built.py
 ```
 
 ### 2. Set Up Environment Variables
@@ -49,14 +52,16 @@ Create a `.env` file in the `front_end` directory with the following keys:
 GEMINI_API_KEY=your_google_gemini_api_key
 GEMINI_MODEL=your preferred Gemini model
 ```
+You can get a Google API key from; 
 
-> **Important:** Never commit your `.env` file or API keys to version control.
+https://aistudio.google.com/apikey
 
 ### 3. Build the Docker Image
 
-Make sure Docker is installed. Build the Docker Compose container:
+Make sure Docker is installed. After the load_in_built.py file finishes running, build the Docker Compose container:
 
 ```bash
+cd ..
 docker compose up -- build
 ```
 

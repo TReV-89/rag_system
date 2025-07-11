@@ -5,7 +5,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY streamlit_ui.py . 
 COPY rag_methods.py .
-COPY load_in_built.py .
+
 
 EXPOSE 8501
 

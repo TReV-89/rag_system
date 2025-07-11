@@ -10,25 +10,6 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 
 
-def split_and_load_documents_in_built(collection):
-    file_name = "war and peace.txt"
-    current_directory = os.path.dirname(__file__)
-    file_path = os.path.join(current_directory, "..", "rag_document", file_name)
-    file_path = os.path.normpath(file_path)
-    rag_documents = load_document(file_path, file_name)
-    
-    if rag_documents:
-        chunker = RecursiveCharacterTextSplitter(chunk_size=800, chunk_overlap=50)
-        chunked_docs = chunker.split_documents(rag_documents)
-        texts = documents_to_texts(chunked_docs)
-        metadatas = documents_to_metadatas(chunked_docs)
-        collection.add(
-            documents=texts,
-            metadatas=metadatas,
-            ids=[f"id{i}" for i in range(len(chunked_docs))],
-        )
-
-     
 def clear_chat():
     if "messages" in st.session_state:
         st.session_state.messages.clear()
