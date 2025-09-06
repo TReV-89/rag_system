@@ -21,7 +21,9 @@ google_ef = embedding_functions.GoogleGenerativeAiEmbeddingFunction(api_key=api_
 if not api_key:
     raise ValueError("GEMINI_API_KEY environment variable is not in .env file.")
 
-client = chromadb.HttpClient(host="chroma", port=8000)
+chroma_host = os.getenv("CHROMA_HOST", "http://localhost:8000")
+
+client = chromadb.HttpClient(host="chroma_host", port=443,ssl = True)
 
 if not (ret := client.heartbeat()):
     st.error(
