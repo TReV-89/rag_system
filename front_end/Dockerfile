@@ -9,4 +9,4 @@ COPY rag_methods.py .
 
 EXPOSE 8501
 
-CMD [ "streamlit" , "run" , "streamlit_ui.py"]
+CMD ["streamlit", "run", "streamlit_ui.py", "--server.port=8501", "--server.address=0.0.0.0"]
