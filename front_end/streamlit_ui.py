@@ -24,9 +24,9 @@ if not api_key:
     raise ValueError("GEMINI_API_KEY environment variable is not in .env file.")
 
 # To this:
-chroma_host = os.getenv("CHROMA_HOST", "localhost")
-chroma_port = int(os.getenv("CHROMA_PORT", "8000"))
-use_ssl = os.getenv("CHROMA_SSL", "false").lower() == "true"
+chroma_host = os.getenv("CHROMA_HOST", "rag-system-data.onrender.com")
+chroma_port = int(os.getenv("CHROMA_PORT", "443"))
+use_ssl = os.getenv("CHROMA_SSL", "true").lower() == "true"
 
 client = chromadb.HttpClient(host=chroma_host, port=chroma_port, ssl=use_ssl)
 if not (ret := client.heartbeat()):
