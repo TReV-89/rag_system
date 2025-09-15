@@ -93,10 +93,14 @@ You should see the RAG System interface.
 
 ## 6. Public URL
 
+First run the database:
+
+https://rag-system-data.onrender.com/ 
+
 The deployed application is accessible at:
 
 ```
-http://13.48.135.56:8501 
+https://rag-system-5.onrender.com/
 ```
 
 ---
