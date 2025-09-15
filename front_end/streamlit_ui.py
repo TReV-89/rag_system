@@ -23,10 +23,12 @@ default_ef = embedding_functions.DefaultEmbeddingFunction()
 if not api_key:
     raise ValueError("GEMINI_API_KEY environment variable is not in .env file.")
 
-chroma_host = os.getenv("CHROMA_HOST", "http://localhost:8000")
+# To this:
+chroma_host = os.getenv("CHROMA_HOST", "localhost")
+chroma_port = int(os.getenv("CHROMA_PORT", "8000"))
+use_ssl = os.getenv("CHROMA_SSL", "false").lower() == "true"
 
-client = chromadb.HttpClient(host="chroma_host", port=443,ssl = True)
-
+client = chromadb.HttpClient(host=chroma_host, port=chroma_port, ssl=use_ssl)
 if not (ret := client.heartbeat()):
     st.error(
         "ChromaDB server is not running. Please start the server before using this app."
