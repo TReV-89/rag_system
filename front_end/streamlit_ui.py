@@ -13,10 +13,12 @@ from rag_methods import (
     handle_file_upload,
 )
 
-load_dotenv("../.env")
+load_dotenv("./.env")
 api_key = os.getenv("GEMINI_API_KEY")
 model = os.getenv("GEMINI_MODEL")
-google_ef = embedding_functions.GoogleGenerativeAiEmbeddingFunction(api_key=api_key)
+#google_ef = embedding_functions.GoogleGenerativeAiEmbeddingFunction(api_key=api_key)
+default_ef = embedding_functions.DefaultEmbeddingFunction()
+
 
 if not api_key:
     raise ValueError("GEMINI_API_KEY environment variable is not in .env file.")
@@ -35,7 +37,7 @@ else:
 
 if "rag_collection" not in st.session_state:
     st.session_state.rag_collection = client.get_or_create_collection(
-        name="rag_collection_user", embedding_function=google_ef
+        name="rag_collection_user", embedding_function=default_ef
     )
 
 if "llm" not in st.session_state:
